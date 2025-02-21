@@ -1,13 +1,10 @@
-import { Request, Response } from "express";
-import { Route } from "../router";
+import { Controller } from "../router";
+import { authContrller } from "./auth/auth.controller";
 
 // Routes
-export const routes: Route[] = [
+export const controllers: Controller[] = [
   {
-    path: "/",
-    method: "get",
-    handler: (_req: Request, res: Response): void => {
-      res.send("Hello World!");
-    },
+    slug: "auth",
+    controller: authContrller,
   },
 ];

@@ -19,10 +19,10 @@ export const app = express();
 app.use(json({ limit: "1mb" }));
 
 // Security
-app.use(helmet());
 app.use(cors());
+app.use(helmet());
 app.use(hpp());
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+app.use("/api", rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 // Compression
 app.use(compression());
@@ -37,4 +37,4 @@ if (process.env["NODE_ENV"] !== "production") {
 // =====================
 //         ROUTER
 // =====================
-app.use(router);
+app.use("/api", router);
