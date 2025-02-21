@@ -1,6 +1,7 @@
 import { Pool } from "pg";
 import dotenv from "dotenv";
 import logger from "./logger";
+import { loadSQL } from "../utils/sqlLoader";
 
 dotenv.config();
 
@@ -21,7 +22,9 @@ class Database {
         logger.error("PostgreSQL Pool Error:", err);
       });
 
-      logger.info("Database (PostgreSQL) connected.")
+      logger.info("Database (PostgreSQL) connected.");
+
+      this.instance.query(loadSQL("init.sql"));
     }
 
     return Database.instance;

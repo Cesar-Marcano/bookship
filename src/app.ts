@@ -1,3 +1,5 @@
+import "./config/db";
+
 import compression from "compression";
 import cors from "cors";
 import express, { json } from "express";
