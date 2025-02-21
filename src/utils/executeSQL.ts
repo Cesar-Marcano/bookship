@@ -3,6 +3,16 @@ import { db } from "../config/db";
 import { loadSQL } from "./sqlLoader";
 import { DuplicateKeyError } from "../errors/duplicateKey.error";
 
+/**
+ * Returns a function that executes a SQL query loaded from a file.
+ *
+ * The returned function takes an optional array of parameters to be passed to the query.
+ *
+ * The function returns a promise that resolves with the result of the query.
+ *
+ * @param filename The name of the file containing the SQL query.
+ * @returns A function that takes an optional array of parameters and returns a promise with the result of the query.
+ */
 export const executeSQLFile = (filename: string) => {
   return async (
     params?: (string | number | boolean | null)[]
