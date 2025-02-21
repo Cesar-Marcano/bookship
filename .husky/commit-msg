@@ -1,0 +1,5 @@
+echo =====================
+echo COMMIT LINT
+echo =====================
+
+pnpm dlx commitlint --edit $1
