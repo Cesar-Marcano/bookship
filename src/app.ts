@@ -10,12 +10,16 @@ import hpp from "hpp";
 import { morganFormat } from "./config/morgan-format";
 import { router } from "./router";
 import { errorFilter } from "./middleware/filter";
-import { isProduction } from "./config";
+import { isProduction, usesLoadBalancer } from "./config";
 import "./config/passport";
 import passport from "passport";
 
 // Express App Instance
 export const app = express();
+
+// Trust the proxy in case of load balancer
+if (isProduction)
+  app.set("trust proxy", usesLoadBalancer);
 
 // =====================
 //       MIDDLEWARES

@@ -41,6 +41,12 @@ export const jwtSecret = ((): string => {
   return secret;
 })();
 
-export const accessTokenExpiry: string | number = getEnv<string | number>("ACCESS_TOKEN_EXPIRY", "15m");
+export const accessTokenExpiry: string | number = getEnv<string | number>(
+  "ACCESS_TOKEN_EXPIRY",
+  "15m"
+);
 
 export const refreshTokenExpiry = getEnv<string>("REFRESH_TOKEN_EXPIRY", "7d");
+
+export const usesLoadBalancer: boolean =
+  getEnv<string>("USES_LOAD_BALANCER", "false") === "true";
