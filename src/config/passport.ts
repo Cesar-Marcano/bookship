@@ -4,6 +4,8 @@ import { Strategy as LocalStrategy } from "passport-local";
 
 import { authService, userService } from "../services";
 import { jwtSecret } from "./";
+import { JwtPayload, TokenType } from "../types/jwtPayload";
+import { UnauthorizedError } from "../errors/unauthorized.error";
 
 passport.use(
   new LocalStrategy(
@@ -28,11 +30,24 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: jwtSecret,
     },
-    async (payload, done) => {
+    async (payload: JwtPayload, done) => {
       try {
-        const user = await userService.getUserByEmail(payload.email);
-        
-        if (!user) return done(null, false);
+        if (payload.type !== TokenType.Access)
+          return done(new UnauthorizedError("Expected: Access Token, Received: Refresh Token."), false);
+
+        const userData = await userService.getUserByEmail(
+          payload.userData.email
+        );
+
+        if (!userData) return done(null, false);
+
+        if (userData.password) userData.password = "";
+
+        const user = {
+          userData,
+          tokenUuid: payload.uuid,
+        };
+
         return done(null, user);
       } catch (err) {
         return done(err, false);

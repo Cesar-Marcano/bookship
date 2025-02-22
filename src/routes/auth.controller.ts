@@ -1,11 +1,13 @@
 import { Router } from "express";
-
-import { UserWihtoutPassword } from "../repositories/user.repository";
 import passport from "passport";
-import { authService, userService } from "../services";
-import { bodyValidator, HydratedRequest } from "../middleware/bodyValidator";
-import { LoginUserDto } from "../dto/auth/loginUser.dto";
+
 import { CreateUserDto } from "../dto/auth/createUser.dto";
+import { LoginUserDto } from "../dto/auth/loginUser.dto";
+import { isAuthenticated } from "../middleware/authMiddleware";
+import { bodyValidator, HydratedRequest } from "../middleware/bodyValidator";
+import { UserWihtoutPassword } from "../repositories/user.repository";
+import { authService, userService } from "../services";
+import { getUser } from "../utils/getUser";
 
 export const authController = Router();
 
@@ -55,3 +57,27 @@ authController.post(
     }
   }
 );
+
+authController.post("/logout", isAuthenticated, async (req, res, next) => {
+  try {
+    const user = getUser(req);
+
+    const result = await authService.revokeRefreshToken(
+      user.userData.id!,
+      user.tokenUuid
+    );
+
+    if (result) {
+      res.status(200).json({ message: "Successfully logged out" });
+      return;
+    }
+
+    res.status(400).json({ message: "User was not logged in" });
+
+    return;
+  } catch (error) {
+    next(error);
+
+    return;
+  }
+});

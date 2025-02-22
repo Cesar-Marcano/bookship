@@ -1,3 +1,4 @@
+import { UserWihtoutPassword } from "../repositories/user.repository";
 import { Role } from "./role";
 
 export enum TokenType {
@@ -17,3 +18,8 @@ export interface JwtPayload {
 }
 
 export type RawJwtPayload = Omit<JwtPayload, "type">;
+
+export interface ReqUser {
+  userData: UserWihtoutPassword;
+  tokenUuid: string;
+}

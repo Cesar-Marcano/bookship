@@ -17,7 +17,7 @@ export class SessionRepository {
   }
 
   async removeSession(userId: number, uuid: string): Promise<boolean> {
-    const sessionExists = await this.getActiveSession(userId);
+    const sessionExists = await this.getActiveSession(userId, uuid);
 
     if (!sessionExists) return false;
 
@@ -32,9 +32,9 @@ export class SessionRepository {
     return rows[0]?.active_sessions || [];
   }
 
-  async getActiveSession(userId: number): Promise<string> {
-    const { rows } = await getActiveSessionSQL([userId]);
+  async getActiveSession(userId: number, uuid: string): Promise<string | null> {
+    const { rows } = await getActiveSessionSQL([userId, uuid]);
 
-    return rows[0]?.active_session || null;
+    return rows[0]?.id ? uuid : null;
   }
 }

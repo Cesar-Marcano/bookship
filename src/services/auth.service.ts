@@ -73,7 +73,7 @@ export class AuthService extends Service {
   public async revokeRefreshToken(
     userId: number,
     tokenUuid: string
-  ): Promise<void> {
-    await this.sessionRepository.removeSession(userId, tokenUuid);
+  ): Promise<boolean> {
+    return await this.sessionRepository.removeSession(userId, tokenUuid);
   }
 }
