@@ -1,8 +1,9 @@
-import { Pool } from "pg";
 import dotenv from "dotenv";
-import logger from "./logger";
+import { Pool } from "pg";
+
 import { loadSQL } from "../utils/sqlLoader";
-import { getEnv } from "../utils/getEnv";
+import { dbUrl } from "./";
+import logger from "./logger";
 
 dotenv.config();
 
@@ -12,8 +13,6 @@ class Database {
   private constructor() {}
 
   public static getInstance(): Pool {
-    const dbUrl = getEnv<string | null>("DATABASE_URL");
-
     if (!dbUrl) {
       throw new Error("DATABASE_URL is not defined.");
     }
