@@ -1,4 +1,4 @@
--- Users table
+-- Migration #0 02/21/2025 - Create users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -19,5 +19,19 @@ END $$;
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS role user_role DEFAULT 'user';
 
--- Migration #1 02/22/2025 - Add active_sessions column
-ALTER TABLE users ADD COLUMN IF NOT EXISTS active_sessions UUID[] DEFAULT ARRAY[]::UUID[];
+-- Migration #1 02/22/2025 - Add active_sessions column (removed in migration #2)
+-- ALTER TABLE users ADD COLUMN IF NOT EXISTS active_sessions UUID[] DEFAULT ARRAY[]::UUID[];
+
+-- Migration #2 02/22/2025 - Create sessions table
+CREATE TABLE IF NOT EXISTS sessions (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    uuid UUID NOT NULL,
+    user_ip VARCHAR(255) NOT NULL,
+    user_agent VARCHAR(255) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+ALTER TABLE users DROP COLUMN IF EXISTS active_sessions;
