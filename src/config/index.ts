@@ -50,3 +50,13 @@ export const refreshTokenExpiry = getEnv<string>("REFRESH_TOKEN_EXPIRY", "7d");
 
 export const usesLoadBalancer: boolean =
   getEnv<string>("USES_LOAD_BALANCER", "false") === "true";
+
+export const nodemailerConfig = {
+  host: getEnv<string>("MAILER_HOST")!,
+  port: getEnv<number>("MAILER_PORT")!,
+  secure: getEnv<boolean>("MAILER_SECURE")!,
+  auth: {
+    user: getEnv<string>("MAILER_USER")!,
+    pass: getEnv<string>("MAILER_PASS")!,
+  },
+};
