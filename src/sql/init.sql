@@ -7,3 +7,8 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Migration #0 02/22/2025 - Add role column
+CREATE TYPE user_role AS ENUM ('admin', 'user', 'moderator', 'creator');
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS role user_role DEFAULT 'user';
