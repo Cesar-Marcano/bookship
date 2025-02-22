@@ -54,9 +54,11 @@ export const usesLoadBalancer: boolean =
 export const nodemailerConfig = {
   host: getEnv<string>("MAILER_HOST")!,
   port: getEnv<number>("MAILER_PORT")!,
-  secure: getEnv<boolean>("MAILER_SECURE")!,
+  secure: getEnv<string>("MAILER_SECURE", "false")! === "true",
   auth: {
     user: getEnv<string>("MAILER_USER")!,
     pass: getEnv<string>("MAILER_PASS")!,
   },
 };
+
+export const appName = getEnv<string>("APP_NAME", "BookShip");

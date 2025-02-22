@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{app_name}} Email Verification</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f9fafb;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #1f2937;
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      p {
+        color: #4b5563;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+      .button {
+        display: inline-block;
+        background-color: #3b82f6; /* Azul */
+        color: #ffffff;
+        padding: 15px 25px;
+        border-radius: 21px; /* Bordes redondeados */
+        text-decoration: none;
+        font-weight: bold;
+        text-align: center;
+      }
+      .button:visited {
+        color: #ffffff; /* Mantener texto blanco */
+      }
+      .footer {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #6b7280;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Verify your email for {{app_name}}</h1>
+      <p>Hello, {{user_name}}!</p>
+      <p>
+        Thanks for sign up in {{app_name}}. To complete your registration, we
+        need to verify your email address. Please click on the button below to
+        verify your email address.
+      </p>
+      <a href="{{verification_link}}" class="button">Verify email</a>
+      <p class="footer">
+        If the button above doesn't work, you can also click on the link below,
+        or copy and paste it into your browser:
+      </p>
+      <p class="footer">
+        <a href="{{verification_link}}">{{verification_link}}</a>
+      </p class="footer">
+      <p>If you did not sign up for {{app_name}}, you can ignore this email.</p>
+    </div>
+  </body>
+</html>

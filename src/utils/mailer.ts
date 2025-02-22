@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-import { nodemailerConfig } from "../config";
+import { appName, nodemailerConfig } from "../config";
 import { renderTemplate } from "../utils/renderMailTemplate";
 import logger from "../config/logger";
 
@@ -16,7 +16,7 @@ export const sendEmail = async (
   const htmlContent = renderTemplate(templateName, variables);
 
   const mailOptions = {
-    from: `"No Reply" <${nodemailerConfig.auth.user}>`,
+    from: `"${appName} (No Reply)" <${nodemailerConfig.auth.user}>`,
     to,
     subject,
     html: htmlContent,

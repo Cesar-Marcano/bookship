@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{app_name}} Two-Factor Authentication</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f9fafb;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #1f2937;
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      p {
+        color: #4b5563;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+      .otp {
+        font-size: 32px;
+        font-weight: bold;
+        color: #3b82f6;
+        text-align: center;
+        padding: 10px;
+        background-color: #e0f2fe;
+        border-radius: 21px;
+        display: inline-block;
+        margin: 20px auto;
+      }
+      .info-box {
+        background-color: #f3f4f6;
+        padding: 10px;
+        border-radius: 10px;
+        margin-top: 15px;
+        font-size: 14px;
+      }
+      .footer {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #6b7280;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Two-Factor Authentication (2FA) Code</h1>
+      <p>Hello, {{user_name}}!</p>
+      <p>
+        You are trying to log in to your account on {{app_name}}. Use the code
+        below to complete your authentication:
+      </p>
+      <div class="otp">{{otp_code}}</div>
+      <p>This code will expire in {{otp_expiry}}.</p>
+
+      <div class="info-box">
+        <p><strong>Login Details:</strong></p>
+        <p><strong>IP Address:</strong> {{user_ip}}</p>
+        <p><strong>Device:</strong> {{user_agent}}</p>
+      </div>
+
+      <p class="footer">
+        If you did not try to log in, please secure your account immediately.
+      </p>
+    </div>
+  </body>
+</html>
