@@ -35,3 +35,17 @@ CREATE TABLE IF NOT EXISTS sessions (
 );
 
 ALTER TABLE users DROP COLUMN IF EXISTS active_sessions;
+
+-- Migration #3 02/22/2025 - Add email verified column into users table and is enabled Two-Factor Authentication column
+ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_2fa_enabled BOOLEAN DEFAULT TRUE;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'two_factor_type') THEN
+        CREATE TYPE user_role AS ENUM ('email', 'authenticator');
+    END IF;
+END $$;
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS two_factor_type two_factor_type DEFAULT 'email';
+
