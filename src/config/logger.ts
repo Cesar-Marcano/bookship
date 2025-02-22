@@ -4,6 +4,7 @@ import { createLogger, format, transports } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 
 import { getLevelStyle, timestampFormat } from "./";
+import { getEnv } from "../utils/getEnv";
 
 const consoleFormat = format.combine(
   format.timestamp({ format: timestampFormat }),
@@ -16,7 +17,7 @@ const loggerTransports = [];
 
 loggerTransports.push(new transports.Console({ format: consoleFormat }));
 
-if (process.env["NODE_ENV"] !== "production") {
+if (getEnv("NODE_ENV") !== "production") {
   const logDir = "./logs";
   if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir, { recursive: true });

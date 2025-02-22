@@ -10,6 +10,7 @@ import hpp from "hpp";
 import { morganFormat } from "./config/morgan-format";
 import { router } from "./router";
 import { errorFilter } from "./middleware/filter";
+import { getEnv } from "./utils/getEnv";
 
 // Express App Instance
 export const app = express();
@@ -32,7 +33,7 @@ app.use(compression());
 
 // Development Middlewares
 
-if (process.env["NODE_ENV"] !== "production") {
+if (getEnv("NODE_ENV") !== "production") {
   // Logs HTTP requests
   app.use(morganFormat);
 }
