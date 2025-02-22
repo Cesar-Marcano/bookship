@@ -1,10 +1,6 @@
-import dotenv from "dotenv";
-
 import { app } from "./app";
 import logger from "./config/logger";
 import { defaultPort, isProduction, port } from "./config";
-
-dotenv.config();
 
 const portFromEnv = parseInt(port ?? "");
 const appPort: number = isNaN(portFromEnv) ? defaultPort : portFromEnv;

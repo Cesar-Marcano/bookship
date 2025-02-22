@@ -1,5 +1,9 @@
 import chalk from "chalk";
+import dotenv from "dotenv";
+
 import { getEnv } from "../utils/getEnv";
+
+dotenv.config();
 
 export const timestampFormat = "YYYY-MM-DD HH:mm:ss";
 
