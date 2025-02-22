@@ -9,7 +9,13 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Migration #0 02/22/2025 - Add role column
-CREATE TYPE user_role AS ENUM ('admin', 'user', 'moderator', 'creator');
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
+        CREATE TYPE user_role AS ENUM ('admin', 'user', 'moderator', 'creator');
+    END IF;
+END $$;
+
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS role user_role DEFAULT 'user';
 
