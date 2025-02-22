@@ -4,6 +4,8 @@ import { executeSQLFile } from "../utils/executeSQL";
 
 const addActiveSessionSQL = executeSQLFile("auth/addActiveSession");
 const removeActiveSessionSQL = executeSQLFile("auth/removeActiveSession");
+const getSessionsSQL = executeSQLFile("auth/getSessions");
+const getActiveSessionSQL = executeSQLFile("auth/getActiveSession");
 
 export class SessionRepository {
   async createSession(userId: number): Promise<string> {
@@ -15,8 +17,24 @@ export class SessionRepository {
   }
 
   async removeSession(userId: number, uuid: string): Promise<boolean> {
+    const sessionExists = await this.getActiveSession(userId);
+
+    if (!sessionExists) return false;
+
     await removeActiveSessionSQL([userId, uuid]);
 
     return true;
+  }
+
+  async getSessions(userId: number): Promise<string[]> {
+    const { rows } = await getSessionsSQL([userId]);
+
+    return rows[0]?.active_sessions || [];
+  }
+
+  async getActiveSession(userId: number): Promise<string> {
+    const { rows } = await getActiveSessionSQL([userId]);
+
+    return rows[0]?.active_session || null;
   }
 }

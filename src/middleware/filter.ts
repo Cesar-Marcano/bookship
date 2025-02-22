@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { NotFoundError } from "../errors/notFound.error";
 import { BadRequestError } from "../errors/badRequest.error";
 import { UnauthorizedError } from "../errors/unauthorized.error";
+import logger from "../config/logger";
 
 export const errorFilter = (
   error: unknown,
@@ -29,6 +30,17 @@ export const errorFilter = (
 
     return;
   }
+
+  if (
+    error &&
+    typeof error === "object" &&
+    "message" in error &&
+    "stack" in error
+  ) {
+    logger.error(
+      `Unexpected Error:\nmessage: ${error.message},\nroute: ${_req.path},\nmethod: ${_req.method},\nstack: ${error.stack}`
+    ); // Save unexpected errors to the log system
+  } else logger.error("FATAL: Unknown error occurred, no details provided.");
 
   res.status(500).json({
     message: "Internal server error.",

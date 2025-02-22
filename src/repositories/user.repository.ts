@@ -1,4 +1,5 @@
 import { NotFoundError } from "../errors/notFound.error";
+import { Role } from "../types/role";
 import { executeSQLFile } from "../utils/executeSQL";
 
 const getAllUserDataSQL = executeSQLFile("/user/getAllUserData");
@@ -13,6 +14,7 @@ export interface User {
   name: string;
   email: string;
   password: string;
+  role?: Role;
 }
 
 export type UserWihtoutPassword = Omit<User, "password">;
@@ -52,7 +54,7 @@ export class UserRepository {
    * @param email The email of the user to find.
    * @returns The user object if found, otherwise null.
    */
-  async findByEmail(email: string): Promise<UserWihtoutPassword> {
+  async findByEmail(email: string): Promise<User> {
     const { rows } = await getUserByEmailSQL([email]);
 
     return rows[0] || null;

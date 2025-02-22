@@ -11,6 +11,8 @@ import { morganFormat } from "./config/morgan-format";
 import { router } from "./router";
 import { errorFilter } from "./middleware/filter";
 import { isProduction } from "./config";
+import "./config/passport";
+import passport from "passport";
 
 // Express App Instance
 export const app = express();
@@ -30,6 +32,9 @@ app.use("/api", rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 // Compression
 app.use(compression());
+
+// Passport
+app.use(passport.initialize());
 
 // Development Middlewares
 

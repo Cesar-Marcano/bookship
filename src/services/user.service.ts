@@ -42,7 +42,7 @@ export class UserService extends Service {
    *
    * @throws {NotFoundError} If the user with the given email does not exist.
    */
-  public async getUserByEmail(email: string): Promise<UserWihtoutPassword> {
+  public async getUserByEmail(email: string): Promise<User> {
     return this.userRepository.findByEmail(email); // Already throws a NotFoundError exception if not found.
   }
 
