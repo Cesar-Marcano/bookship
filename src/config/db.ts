@@ -24,7 +24,7 @@ class Database {
 
       logger.info("Database (PostgreSQL) connected.");
 
-      this.instance.query(loadSQL("init.sql"));
+      this.instance.query(loadSQL("init"));
     }
 
     return Database.instance;
