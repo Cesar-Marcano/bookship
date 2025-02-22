@@ -1,8 +1,10 @@
+import { refreshTokenExpiry } from "../config";
 import { BadRequestError } from "../errors/badRequest.error";
 import { NotFoundError } from "../errors/notFound.error";
 import { SessionRepository } from "../repositories/session.repository";
 import { UserWihtoutPassword } from "../repositories/user.repository";
 import { RawJwtPayload } from "../types/jwtPayload";
+import { calculateExpiresAt } from "../utils/calculateExpiresAt";
 import { comparePassword } from "../utils/hasher";
 import { Service } from "../utils/service";
 import { jwtService } from "./";
@@ -30,12 +32,19 @@ export class AuthService extends Service {
   }
 
   public async generateRefreshToken(
-    user: UserWihtoutPassword
+    user: UserWihtoutPassword,
+    userIp: string,
+    userAgent: string
   ): Promise<string> {
     let sessionUuid: string | null = null;
 
     try {
-      sessionUuid = await this.sessionRepository.createSession(user.id!);
+      sessionUuid = await this.sessionRepository.createSession(
+        user.id!,
+        userIp,
+        userAgent,
+        calculateExpiresAt(refreshTokenExpiry)
+      );
 
       const payload: RawJwtPayload = {
         uuid: sessionUuid,

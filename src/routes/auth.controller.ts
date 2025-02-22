@@ -8,6 +8,8 @@ import { bodyValidator, HydratedRequest } from "../middleware/bodyValidator";
 import { UserWihtoutPassword } from "../repositories/user.repository";
 import { authService, userService } from "../services";
 import { getUser } from "../utils/getUser";
+import { getUserIp } from "../utils/getUserIp";
+import { getUserAgent } from "../utils/getUserAgent";
 
 export const authController = Router();
 
@@ -27,7 +29,11 @@ authController.post(
         if (!user) return res.status(400).json({ message: info.message });
 
         try {
-          const refreshToken = await authService.generateRefreshToken(user);
+          const refreshToken = await authService.generateRefreshToken(
+            user,
+            getUserIp(req),
+            getUserAgent(req)
+          );
           const accessToken =
             await authService.generateAccessToken(refreshToken);
 

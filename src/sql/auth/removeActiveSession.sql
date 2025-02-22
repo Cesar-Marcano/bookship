@@ -1,3 +1,2 @@
-UPDATE users
-SET active_sessions = array_remove(active_sessions, $2)
-WHERE id = $1;
+DELETE FROM sessions
+WHERE user_id = $1 AND uuid = $2;

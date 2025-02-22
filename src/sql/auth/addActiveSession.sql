@@ -1,3 +1,2 @@
-UPDATE users
-SET active_sessions = array_append(active_sessions, $2)
-WHERE id = $1;
+INSERT INTO sessions (user_id, uuid, user_ip, user_agent, expires_at)
+VALUES ($1, $2, $3, $4, $5);

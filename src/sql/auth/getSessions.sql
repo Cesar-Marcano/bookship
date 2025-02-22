@@ -1,3 +1,3 @@
-SELECT active_sessions
-FROM users
-WHERE id = $1;
+SELECT *
+FROM sessions
+WHERE user_id = $1;
