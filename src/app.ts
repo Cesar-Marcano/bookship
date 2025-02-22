@@ -42,7 +42,7 @@ app.use(passport.initialize());
 
 // Development Middlewares
 
-if (isProduction) {
+if (!isProduction) {
   // Logs HTTP requests
   app.use(morganFormat);
 }
