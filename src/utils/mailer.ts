@@ -1,25 +1,34 @@
 import nodemailer from "nodemailer";
 
 import { nodemailerConfig } from "../config";
+import { renderTemplate } from "../utils/renderMailTemplate";
+import logger from "../config/logger";
 
 export const sendEmail = async (
   to: string,
   subject: string,
-  text: string
-): Promise<void> => {
+  templateName: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  variables: Record<string, any>
+): Promise<string> => {
   const transporter = nodemailer.createTransport(nodemailerConfig);
+
+  const htmlContent = renderTemplate(templateName, variables);
 
   const mailOptions = {
     from: `"No Reply" <${nodemailerConfig.auth.user}>`,
     to,
     subject,
-    text,
+    html: htmlContent,
   };
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email enviado: " + info.response);
+
+    return info.response;
   } catch (error) {
-    console.error("Error al enviar el email:", error);
+    logger.error(error);
+
+    throw error;
   }
 };
