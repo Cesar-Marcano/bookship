@@ -25,7 +25,7 @@ export class UserService extends Service {
     try {
       const password = await hashPassword(user.password);
 
-      return this.userRepository.create({ ...user, password });
+      return await this.userRepository.create({ ...user, password });
     } catch (error) {
       if (error instanceof DuplicateKeyError) {
         throw new BadRequestError(error.message);
