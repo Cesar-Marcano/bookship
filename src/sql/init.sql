@@ -43,7 +43,7 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS is_2fa_enabled BOOLEAN DEFAULT TRUE;
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'two_factor_type') THEN
-        CREATE TYPE user_role AS ENUM ('email', 'authenticator');
+        CREATE TYPE two_factor_type AS ENUM ('email', 'authenticator');
     END IF;
 END $$;
 
