@@ -12,3 +12,6 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TYPE user_role AS ENUM ('admin', 'user', 'moderator', 'creator');
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS role user_role DEFAULT 'user';
+
+-- Migration #1 02/22/2025 - Add active_sessions column
+ALTER TABLE users ADD COLUMN IF NOT EXISTS active_sessions UUID[] DEFAULT ARRAY[]::UUID[];
