@@ -1,7 +1,10 @@
 import { refreshTokenExpiry } from "../config";
 import { BadRequestError } from "../errors/badRequest.error";
 import { NotFoundError } from "../errors/notFound.error";
-import { SessionRepository } from "../repositories/session.repository";
+import {
+  SessionRepository,
+  SessionType,
+} from "../repositories/session.repository";
 import { UserWihtoutPassword } from "../repositories/user.repository";
 import { RawJwtPayload } from "../types/jwtPayload";
 import { calculateExpiresAt } from "../utils/calculateExpiresAt";
@@ -84,5 +87,9 @@ export class AuthService extends Service {
     tokenUuid: string
   ): Promise<boolean> {
     return await this.sessionRepository.removeSession(userId, tokenUuid);
+  }
+
+  public async getActiveSessions(userId: number): Promise<SessionType[]> {
+    return await this.sessionRepository.getSessions(userId);
   }
 }

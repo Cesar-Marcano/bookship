@@ -87,3 +87,23 @@ authController.post("/logout", isAuthenticated, async (req, res, next) => {
     return;
   }
 });
+
+authController.get(
+  "/active-sessions",
+  isAuthenticated,
+  async (req, res, next) => {
+    try {
+      const user = getUser(req);
+
+      const sessions = await authService.getActiveSessions(user.userData.id!);
+
+      res.status(200).json(sessions);
+
+      return;
+    } catch (error) {
+      next(error);
+
+      return;
+    }
+  }
+);

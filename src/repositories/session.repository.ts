@@ -40,10 +40,10 @@ export class SessionRepository {
     return true;
   }
 
-  async getSessions(userId: number): Promise<string[]> {
+  async getSessions(userId: number): Promise<SessionType[]> {
     const { rows } = await getSessionsSQL([userId]);
 
-    return rows[0]?.active_sessions || [];
+    return rows || [];
   }
 
   async getActiveSession(
