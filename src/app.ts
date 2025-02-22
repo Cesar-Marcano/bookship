@@ -9,7 +9,7 @@ import hpp from "hpp";
 
 import { morganFormat } from "./config/morgan-format";
 import { router } from "./router";
-import { errorFilter } from "./config/filter";
+import { errorFilter } from "./middleware/filter";
 
 // Express App Instance
 export const app = express();
