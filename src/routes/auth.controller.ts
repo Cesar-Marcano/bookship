@@ -10,6 +10,7 @@ import { authService, userService } from "../services";
 import { getUser } from "../utils/getUser";
 import { getUserIp } from "../utils/getUserIp";
 import { getUserAgent } from "../utils/getUserAgent";
+import { LogoutDeviceDTO } from "../dto/auth/logoutDevice.dto";
 
 export const authController = Router();
 
@@ -98,6 +99,35 @@ authController.get(
       const sessions = await authService.getActiveSessions(user.userData.id!);
 
       res.status(200).json(sessions);
+
+      return;
+    } catch (error) {
+      next(error);
+
+      return;
+    }
+  }
+);
+
+authController.post(
+  "/logout-device",
+  bodyValidator(LogoutDeviceDTO),
+  isAuthenticated,
+  async (req: HydratedRequest<LogoutDeviceDTO>, res, next) => {
+    try {
+      const user = getUser(req);
+
+      const result = await authService.revokeRefreshToken(
+        user.userData.id!,
+        req.body.sessionUUID
+      );
+
+      if (result) {
+        res.status(200).json({ message: "Successfully logged out" });
+        return;
+      }
+
+      res.status(400).json({ message: "User was not logged in" });
 
       return;
     } catch (error) {
