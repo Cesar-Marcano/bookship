@@ -1,12 +1,12 @@
 import { NotFoundError } from "../errors/notFound.error";
 import { executeSQLFile } from "../utils/executeSQL";
 
-const getAllUserDataSQL = executeSQLFile("/user/getAllUserData.sql");
-const getUserByIdSQL = executeSQLFile("/user/getUserById.sql");
-const createUserSQL = executeSQLFile("/user/createUser.sql");
-const getUserByEmailSQL = executeSQLFile("/user/getUserByEmail.sql");
-const updateUserSQL = executeSQLFile("/user/updateUser.sql");
-const deleteUserSQL = executeSQLFile("/user/deleteUser.sql");
+const getAllUserDataSQL = executeSQLFile("/user/getAllUserData");
+const getUserByIdSQL = executeSQLFile("/user/getUserById");
+const createUserSQL = executeSQLFile("/user/createUser");
+const getUserByEmailSQL = executeSQLFile("/user/getUserByEmail");
+const updateUserSQL = executeSQLFile("/user/updateUser");
+const deleteUserSQL = executeSQLFile("/user/deleteUser");
 
 export interface User {
   id?: number;
@@ -66,7 +66,10 @@ export class UserRepository {
    *
    * @throws {NotFoundError} If the user with the given ID does not exist.
    */
-  async updateUserById(id: number, user: Partial<User>): Promise<UserWihtoutPassword> {
+  async updateUserById(
+    id: number,
+    user: Partial<User>
+  ): Promise<UserWihtoutPassword> {
     const { rows } = await getAllUserDataSQL([id]);
 
     if (!rows[0]) {

@@ -1,7 +1,8 @@
 import { QueryResult } from "pg";
+
 import { db } from "../config/db";
-import { loadSQL } from "./sqlLoader";
 import { DuplicateKeyError } from "../errors/duplicateKey.error";
+import { loadSQL } from "./sqlLoader";
 
 /**
  * Returns a function that executes a SQL query loaded from a file.
@@ -29,7 +30,10 @@ export const executeSQLFile = (filename: string) => {
 
 const handleDatabaseError = (error: unknown): void => {
   if (isDuplicateKeyError(error)) {
-    const { table, constraint } = error as { table: string; constraint: string };
+    const { table, constraint } = error as {
+      table: string;
+      constraint: string;
+    };
     const keyName = constraint.replace(`${table}_`, "").replace("_key", "");
     throw new DuplicateKeyError(keyName);
   }
