@@ -17,6 +17,7 @@ import { twoFactorAuthHandler } from "./handlers/twoFactorAuth.handler";
 import { accessTokenHandler } from "./handlers/accessToken.handler";
 import { registerHandler } from "./handlers/register.handler";
 import { LogoutHandler } from "./handlers/logout.handler";
+import { getActiveSessionsHandler } from "./handlers/getActiveSessions.handler";
 
 export const authController = Router();
 
@@ -41,21 +42,7 @@ authController.post("/logout", isAuthenticated, LogoutHandler);
 authController.get(
   "/active-sessions",
   isAuthenticated,
-  async (req, res, next) => {
-    try {
-      const user = getUser(req);
-
-      const sessions = await authService.getActiveSessions(user.userData.id!);
-
-      res.status(200).json(sessions);
-
-      return;
-    } catch (error) {
-      next(error);
-
-      return;
-    }
-  }
+  getActiveSessionsHandler
 );
 
 authController.post(
