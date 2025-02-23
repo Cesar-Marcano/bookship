@@ -92,4 +92,24 @@ export class AuthService extends Service {
   public async getActiveSessions(userId: number): Promise<SessionType[]> {
     return await this.sessionRepository.getSessions(userId);
   }
+
+  public async generateEmailVerificationToken(email: string): Promise<string> {
+    return await jwtService.generateEmailVerificationToken(email);
+  }
+
+  public async verifyEmailVerificationToken(token: string): Promise<boolean> {
+    const email = await jwtService.verifyEmailVerificationToken(token);
+
+    const user = await this.userService.getUserByEmail(email);
+    if (!user) throw new NotFoundError("User not found");
+
+    if (user.email_verified)
+      throw new BadRequestError("Email already verified");
+
+    await this.userService.updateUserById(user.id!, {
+      email_verified: true,
+    });
+
+    return true;
+  }
 }

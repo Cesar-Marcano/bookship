@@ -9,7 +9,7 @@ import { hashPassword } from "../utils/hasher";
 import { Service } from "../utils/service";
 
 export class UserService extends Service {
-  constructor(public readonly userRepository: UserRepository) {
+  constructor(private readonly userRepository: UserRepository) {
     super();
   }
 

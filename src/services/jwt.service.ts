@@ -1,7 +1,12 @@
 import * as jwt from "jsonwebtoken";
 import { StringValue } from "ms";
 
-import { accessTokenExpiry, jwtSecret, refreshTokenExpiry } from "../config";
+import {
+  accessTokenExpiry,
+  emailVerificationTokenExpiry,
+  jwtSecret,
+  refreshTokenExpiry,
+} from "../config";
 import { TokenTypeError } from "../errors/tokenType.error";
 import { JwtPayload, RawJwtPayload, TokenType } from "../types/jwtPayload";
 import { Service } from "../utils/service";
@@ -12,7 +17,10 @@ export class JwtService extends Service {
     super();
   }
 
-  public async generateAccessToken({userData, uuid}: RawJwtPayload): Promise<string> {
+  public async generateAccessToken({
+    userData,
+    uuid,
+  }: RawJwtPayload): Promise<string> {
     return jwt.sign({ userData, uuid, type: TokenType.Access }, jwtSecret, {
       expiresIn: accessTokenExpiry as StringValue,
     });
@@ -47,6 +55,22 @@ export class JwtService extends Service {
       return payload;
     } catch {
       throw new BadRequestError("Invalid or expired access token");
+    }
+  }
+
+  public async generateEmailVerificationToken(email: string): Promise<string> {
+    return jwt.sign({ email }, jwtSecret, {
+      expiresIn: emailVerificationTokenExpiry as StringValue,
+    });
+  }
+
+  public async verifyEmailVerificationToken(token: string): Promise<string> {
+    try {
+      const payload = jwt.verify(token, jwtSecret) as { email: string };
+
+      return payload.email;
+    } catch {
+      throw new BadRequestError("Invalid or expired email verification token");
     }
   }
 }

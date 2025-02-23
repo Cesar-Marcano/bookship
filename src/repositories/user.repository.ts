@@ -15,6 +15,9 @@ export interface User {
   email: string;
   password: string;
   role?: Role;
+  email_verified?: boolean;
+  is_2fa_enabled?: boolean;
+  two_factor_type?: "email" | "authenticator";
 }
 
 export type UserWihtoutPassword = Omit<User, "password">;
@@ -88,6 +91,10 @@ export class UserRepository {
       updatedUser.name,
       updatedUser.email,
       updatedUser.password,
+      updatedUser.email_verified,
+      updatedUser.is_2fa_enabled,
+      updatedUser.role,
+      updatedUser.two_factor_type,
     ]);
 
     return updatedRows[0];

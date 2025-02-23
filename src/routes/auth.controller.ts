@@ -6,7 +6,7 @@ import { LoginUserDto } from "../dto/auth/loginUser.dto";
 import { isAuthenticated } from "../middleware/authMiddleware";
 import { bodyValidator, HydratedRequest } from "../middleware/bodyValidator";
 import { UserWihtoutPassword } from "../repositories/user.repository";
-import { authService, userService } from "../services";
+import { authService, mailService, userService } from "../services";
 import { getUser } from "../utils/getUser";
 import { getUserIp } from "../utils/getUserIp";
 import { getUserAgent } from "../utils/getUserAgent";
@@ -53,6 +53,8 @@ authController.post(
   async (req: HydratedRequest<CreateUserDto>, res, next) => {
     try {
       const user = await userService.createUser(req.body);
+
+      mailService.sendEmailVerificationEmail(req.body.email,req.body.name);
 
       res.status(201).json(user);
 
@@ -137,3 +139,17 @@ authController.post(
     }
   }
 );
+
+authController.get("/verify-email/:id", async (req, res, next) => {
+  try {
+    await authService.verifyEmailVerificationToken(req.params.id);
+
+    res.status(200).json({ message: "Email verified" });
+
+    return;
+  } catch (error) {
+    next(error);
+
+    return;
+  }
+});

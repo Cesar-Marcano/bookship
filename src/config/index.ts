@@ -48,6 +48,11 @@ export const accessTokenExpiry: string | number = getEnv<string | number>(
 
 export const refreshTokenExpiry = getEnv<string>("REFRESH_TOKEN_EXPIRY", "7d");
 
+export const emailVerificationTokenExpiry = getEnv<string>(
+  "EMAIL_VERIFICATION_TOKEN_EXPIRY",
+  "1d"
+);
+
 export const usesLoadBalancer: boolean =
   getEnv<string>("USES_LOAD_BALANCER", "false") === "true";
 
@@ -66,3 +71,8 @@ export const appName = getEnv<string>("APP_NAME", "BookShip");
 export const redisHost = getEnv<string>("REDIS_HOST", "localhost");
 
 export const redisPort = getEnv<number>("REDIS_PORT", 6379);
+
+export const emailVerificationUrl = getEnv<string>(
+  "EMAIL_VERIFICATION_URL",
+  "http://localhost:3000/api/auth/verify-email/"
+);
