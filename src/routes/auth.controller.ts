@@ -12,6 +12,7 @@ import { getUserIp } from "../utils/getUserIp";
 import { getUserAgent } from "../utils/getUserAgent";
 import { LogoutDeviceDTO } from "../dto/auth/logoutDevice.dto";
 import { TwoFactorAuthDTO } from "../dto/auth/twoFactorAuth.dto";
+import { GetAccessTokenDto } from "../dto/auth/getAccessToken.dto";
 
 export const authController = Router();
 
@@ -62,6 +63,27 @@ authController.post(
       );
 
       res.status(200).json(tokens);
+      return;
+    } catch (error) {
+      next(error);
+
+      return;
+    }
+  }
+);
+
+authController.post(
+  "/auth-token",
+  isAuthenticated,
+  bodyValidator(GetAccessTokenDto),
+  async (req: HydratedRequest<GetAccessTokenDto>, res, next) => {
+    try {
+      const accessToken = await authService.generateAccessToken(
+        req.body.refreshToken
+      );
+
+      res.status(200).json({ accessToken });
+
       return;
     } catch (error) {
       next(error);
