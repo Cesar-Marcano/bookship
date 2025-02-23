@@ -3,6 +3,7 @@ import { NotFoundError } from "../errors/notFound.error";
 import { BadRequestError } from "../errors/badRequest.error";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import logger from "../config/logger";
+import { InternalServerError } from "../errors/internalServer.error";
 
 export const errorFilter = (
   error: unknown,
@@ -25,6 +26,12 @@ export const errorFilter = (
     return;
   } else if (error instanceof UnauthorizedError) {
     res.status(401).json({
+      message: error.message,
+    });
+
+    return;
+  } else if (error instanceof InternalServerError) {
+    res.status(500).json({
       message: error.message,
     });
 
