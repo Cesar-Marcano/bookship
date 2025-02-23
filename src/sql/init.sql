@@ -101,3 +101,14 @@ CREATE TABLE IF NOT EXISTS comment_votes (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE (comment_id, user_id)
 );
+
+-- Migration #2 02/23/2025 - Created table for user saved books
+CREATE TABLE IF NOT EXISTS user_saved_books (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    book_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
+    UNIQUE (user_id, book_id)
+)
