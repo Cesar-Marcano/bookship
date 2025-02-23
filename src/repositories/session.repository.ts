@@ -13,6 +13,7 @@ export interface SessionType {
   uuid: string;
   user_ip: string;
   user_agent: string;
+  last_active: string;
   expires_at: string;
   created_at: string;
 }

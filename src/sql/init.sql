@@ -115,3 +115,17 @@ CREATE TABLE IF NOT EXISTS user_saved_books (
 
 -- Migration #3 02/23/2025 - Add forgotten rating column in book_ratings table
 ALTER TABLE book_ratings ADD COLUMN IF NOT EXISTS rating SMALLINT CHECK (rating >= 1 AND rating <= 5) DEFAULT 1;
+
+-- Migration #4 02/23/2025 - Update books table to set NULL constraints
+ALTER TABLE books
+    ALTER COLUMN cover_image_url DROP NOT NULL,
+    ALTER COLUMN file_url DROP NOT NULL;
+
+ALTER TABLE books
+    ALTER COLUMN title SET NOT NULL,
+    ALTER COLUMN author SET NOT NULL,
+    ALTER COLUMN description SET NOT NULL,
+    ALTER COLUMN genre SET NOT NULL,
+    ALTER COLUMN publication_year SET NOT NULL;
+
+ALTER TABLE books ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
