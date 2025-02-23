@@ -1,55 +1,24 @@
 import { Router } from "express";
-import passport from "passport";
 
-import { CreateUserDto } from "../dto/auth/createUser.dto";
-import { LoginUserDto } from "../dto/auth/loginUser.dto";
-import { isAuthenticated } from "../middleware/authMiddleware";
-import { bodyValidator, HydratedRequest } from "../middleware/bodyValidator";
-import { UserWihtoutPassword } from "../repositories/user.repository";
-import { authService, mailService, userService } from "../services";
-import { getUser } from "../utils/getUser";
-import { getUserIp } from "../utils/getUserIp";
-import { getUserAgent } from "../utils/getUserAgent";
-import { LogoutDeviceDTO } from "../dto/auth/logoutDevice.dto";
-import { TwoFactorAuthDTO } from "../dto/auth/twoFactorAuth.dto";
-import { GetAccessTokenDto } from "../dto/auth/getAccessToken.dto";
+import { CreateUserDto } from "../../../dto/auth/createUser.dto";
+import { LoginUserDto } from "../../../dto/auth/loginUser.dto";
+import { isAuthenticated } from "../../../middleware/authMiddleware";
+import {
+  bodyValidator,
+  HydratedRequest,
+} from "../../../middleware/bodyValidator";
+import { authService, mailService, userService } from "../../../services";
+import { getUser } from "../../../utils/getUser";
+import { getUserIp } from "../../../utils/getUserIp";
+import { getUserAgent } from "../../../utils/getUserAgent";
+import { LogoutDeviceDTO } from "../../../dto/auth/logoutDevice.dto";
+import { TwoFactorAuthDTO } from "../../../dto/auth/twoFactorAuth.dto";
+import { GetAccessTokenDto } from "../../../dto/auth/getAccessToken.dto";
+import { loginHandler } from "./handlers/login.handler";
 
 export const authController = Router();
 
-authController.post(
-  "/login",
-  bodyValidator(LoginUserDto),
-  (req: HydratedRequest<LoginUserDto>, res, next) => {
-    passport.authenticate(
-      "local",
-      { session: false },
-      async (
-        err: Error | null,
-        user: UserWihtoutPassword | null,
-        info: { message?: string }
-      ) => {
-        if (err) return next(err);
-        if (!user) return res.status(400).json({ message: info.message });
-
-        try {
-          const userIp = getUserIp(req);
-          const userAgent = getUserAgent(req);
-
-          const loginInfo = await authService.handleLogin(
-            user,
-            userIp,
-            userAgent
-          );
-
-          res.status(200).json(loginInfo);
-          return;
-        } catch (error) {
-          return next(error);
-        }
-      }
-    )(req, res, next);
-  }
-);
+authController.post("/login", bodyValidator(LoginUserDto), loginHandler);
 
 authController.post(
   "/2fa",
@@ -73,8 +42,7 @@ authController.post(
 );
 
 authController.post(
-  "/auth-token",
-  isAuthenticated,
+  "/access-token",
   bodyValidator(GetAccessTokenDto),
   async (req: HydratedRequest<GetAccessTokenDto>, res, next) => {
     try {
