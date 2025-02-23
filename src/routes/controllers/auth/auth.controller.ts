@@ -9,12 +9,11 @@ import {
 } from "../../../middleware/bodyValidator";
 import { authService, mailService, userService } from "../../../services";
 import { getUser } from "../../../utils/getUser";
-import { getUserIp } from "../../../utils/getUserIp";
-import { getUserAgent } from "../../../utils/getUserAgent";
 import { LogoutDeviceDTO } from "../../../dto/auth/logoutDevice.dto";
 import { TwoFactorAuthDTO } from "../../../dto/auth/twoFactorAuth.dto";
 import { GetAccessTokenDto } from "../../../dto/auth/getAccessToken.dto";
 import { loginHandler } from "./handlers/login.handler";
+import { twoFactorAuthHandler } from "./handlers/twoFactorAuth.handler";
 
 export const authController = Router();
 
@@ -23,22 +22,7 @@ authController.post("/login", bodyValidator(LoginUserDto), loginHandler);
 authController.post(
   "/2fa",
   bodyValidator(TwoFactorAuthDTO),
-  async (req: HydratedRequest<TwoFactorAuthDTO>, res, next) => {
-    try {
-      const tokens = await authService.handle2FA(
-        req.body,
-        getUserIp(req),
-        getUserAgent(req)
-      );
-
-      res.status(200).json(tokens);
-      return;
-    } catch (error) {
-      next(error);
-
-      return;
-    }
-  }
+  twoFactorAuthHandler
 );
 
 authController.post(
