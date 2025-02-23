@@ -62,7 +62,7 @@ export class AuthService extends Service {
       return await jwtService.generateRefreshToken(payload);
     } catch (error) {
       if (sessionUuid)
-        this.sessionRepository.removeSession(user.id!, sessionUuid);
+        await this.sessionRepository.removeSession(user.id!, sessionUuid);
 
       throw error;
     }
