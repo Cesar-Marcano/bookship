@@ -7,7 +7,7 @@ import {
   bodyValidator,
   HydratedRequest,
 } from "../../../middleware/bodyValidator";
-import { authService, mailService, userService } from "../../../services";
+import { authService } from "../../../services";
 import { getUser } from "../../../utils/getUser";
 import { LogoutDeviceDTO } from "../../../dto/auth/logoutDevice.dto";
 import { TwoFactorAuthDTO } from "../../../dto/auth/twoFactorAuth.dto";
@@ -15,6 +15,7 @@ import { GetAccessTokenDto } from "../../../dto/auth/getAccessToken.dto";
 import { loginHandler } from "./handlers/login.handler";
 import { twoFactorAuthHandler } from "./handlers/twoFactorAuth.handler";
 import { accessTokenHandler } from "./handlers/accessToken.handler";
+import { registerHandler } from "./handlers/register.handler";
 
 export const authController = Router();
 
@@ -32,25 +33,7 @@ authController.post(
   accessTokenHandler
 );
 
-authController.post(
-  "/register",
-  bodyValidator(CreateUserDto),
-  async (req: HydratedRequest<CreateUserDto>, res, next) => {
-    try {
-      const user = await userService.createUser(req.body);
-
-      mailService.sendEmailVerificationEmail(req.body.email, req.body.name);
-
-      res.status(201).json(user);
-
-      return;
-    } catch (error) {
-      next(error);
-
-      return;
-    }
-  }
-);
+authController.post("/register", bodyValidator(CreateUserDto), registerHandler);
 
 authController.post("/logout", isAuthenticated, async (req, res, next) => {
   try {
