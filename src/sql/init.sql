@@ -129,3 +129,37 @@ ALTER TABLE books
     ALTER COLUMN publication_year SET NOT NULL;
 
 ALTER TABLE books ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+-- Migration #5 02/23/2025 - Added slug column in books table
+ALTER TABLE books ADD COLUMN IF NOT EXISTS slug VARCHAR(255); -- ADD FORGOTTEN IF NOT EXISTS
+
+UPDATE books SET slug = LOWER(REPLACE(title, ' ', '-')) || '-' || id WHERE slug IS NULL;
+
+ALTER TABLE books ALTER COLUMN slug SET NOT NULL;
+
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints 
+        WHERE table_name = 'books' 
+        AND constraint_name = 'unique_slug'
+    ) THEN
+        ALTER TABLE books ADD CONSTRAINT unique_slug UNIQUE (slug);
+    END IF;
+END $$;
+
+-- Migration #6 02/24/2025 - Add ON DELETE CASCADE to foreign keys and enforce NOT NULL on ratings
+
+ALTER TABLE sessions 
+DROP CONSTRAINT sessions_user_id_fkey, 
+ADD CONSTRAINT sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+
+ALTER TABLE user_saved_books 
+DROP CONSTRAINT user_saved_books_book_id_fkey, 
+ADD CONSTRAINT user_saved_books_book_id_fkey FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE;
+
+ALTER TABLE comment_votes 
+DROP CONSTRAINT comment_votes_comment_id_fkey, 
+ADD CONSTRAINT comment_votes_comment_id_fkey FOREIGN KEY (comment_id) REFERENCES book_comments(id) ON DELETE CASCADE;
+
+ALTER TABLE book_ratings ALTER COLUMN rating SET NOT NULL;
