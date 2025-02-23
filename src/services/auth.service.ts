@@ -11,12 +11,14 @@ import { calculateExpiresAt } from "../utils/calculateExpiresAt";
 import { comparePassword } from "../utils/hasher";
 import { Service } from "../utils/service";
 import { jwtService } from "./";
+import { JwtService } from "./jwt.service";
 import { UserService } from "./user.service";
 
 export class AuthService extends Service {
   constructor(
     private readonly userService: UserService,
-    private readonly sessionRepository: SessionRepository
+    private readonly sessionRepository: SessionRepository,
+    private readonly jwtService: JwtService
   ) {
     super();
   }
@@ -68,16 +70,8 @@ export class AuthService extends Service {
     }
   }
 
-  public async verifyRefreshToken(token: string): Promise<RawJwtPayload> {
-    return await jwtService.verifyRefreshToken(token);
-  }
-
-  public async verifyAccessToken(token: string): Promise<RawJwtPayload> {
-    return await jwtService.verifyAccessToken(token);
-  }
-
   public async generateAccessToken(token: string): Promise<string> {
-    const payload = await this.verifyRefreshToken(token);
+    const payload = await this.jwtService.verifyRefreshToken(token);
 
     return await jwtService.generateAccessToken(payload);
   }
