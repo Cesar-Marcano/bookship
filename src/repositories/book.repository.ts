@@ -6,7 +6,7 @@ const updateBookSQL = executeSQLFile("books/updateBook");
 const getBookByIdSQL = executeSQLFile("books/getBookById");
 const deleteBookSQL = executeSQLFile("books/deleteBook");
 const filterBooksSQL = executeSQLFile("books/filterBooks");
-// const searchBooksSQL = executeSQLFile("books/searchBooks");
+const searchBooksSQL = executeSQLFile("books/searchBooks");
 
 export interface Book {
   id: number;
@@ -87,6 +87,24 @@ export class BookRepository {
     offset: number;
   }): Promise<Book[]> {
     const { rows } = await filterBooksSQL([
+      params.genre ?? null,
+      params.author ?? null,
+      params.limit,
+      params.offset,
+    ]);
+
+    return rows;
+  }
+
+  public async searchBooks(params: {
+    titleSearchTerm: string;
+    genre?: string;
+    author?: string;
+    limit: number;
+    offset: number;
+  }): Promise<Book[]> {
+    const { rows } = await searchBooksSQL([
+      params.titleSearchTerm,
       params.genre ?? null,
       params.author ?? null,
       params.limit,
