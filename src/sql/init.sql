@@ -51,3 +51,53 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS two_factor_type two_factor_type DEFAU
 
 -- Migration #0 02/23/2025 - Add last active column in sessions table
 ALTER TABLE sessions ADD COLUMN IF NOT EXISTS last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+-- Migration #1 02/23/25 - Create books, books_rating and book comments and comment votes table
+CREATE TABLE IF NOT EXISTS books (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    description TEXT,
+    publication_year INTEGER,
+    genre VARCHAR(255),
+    cover_image_url VARCHAR(255),
+    file_url VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+);
+
+CREATE TABLE IF NOT EXISTS book_ratings (
+    id SERIAL PRIMARY KEY,
+    book_id INT NOT NULL,
+    user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS book_comments (
+    id SERIAL PRIMARY KEY,
+    book_id INT NOT NULL,
+    user_id INT NOT NULL,
+    comment TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'vote_type') THEN
+        CREATE TYPE vote_type AS ENUM ('upvote', 'downvote');
+    END IF;
+END $$;
+
+CREATE TABLE IF NOT EXISTS comment_votes (
+    id SERIAL PRIMARY KEY,
+    comment_id INT NOT NULL,
+    user_id INT NOT NULL,
+    vote_type vote_type NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (comment_id) REFERENCES book_comments(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE (comment_id, user_id)
+);
