@@ -14,6 +14,7 @@ import { TwoFactorAuthDTO } from "../../../dto/auth/twoFactorAuth.dto";
 import { GetAccessTokenDto } from "../../../dto/auth/getAccessToken.dto";
 import { loginHandler } from "./handlers/login.handler";
 import { twoFactorAuthHandler } from "./handlers/twoFactorAuth.handler";
+import { accessTokenHandler } from "./handlers/accessToken.handler";
 
 export const authController = Router();
 
@@ -28,21 +29,7 @@ authController.post(
 authController.post(
   "/access-token",
   bodyValidator(GetAccessTokenDto),
-  async (req: HydratedRequest<GetAccessTokenDto>, res, next) => {
-    try {
-      const accessToken = await authService.generateAccessToken(
-        req.body.refreshToken
-      );
-
-      res.status(200).json({ accessToken });
-
-      return;
-    } catch (error) {
-      next(error);
-
-      return;
-    }
-  }
+  accessTokenHandler
 );
 
 authController.post(
