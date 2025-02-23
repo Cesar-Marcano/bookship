@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from "uuid";
+
 import { refreshTokenExpiry } from "../config";
 import { BadRequestError } from "../errors/badRequest.error";
 import { NotFoundError } from "../errors/notFound.error";
@@ -13,6 +15,7 @@ import { Service } from "../utils/service";
 import { jwtService } from "./";
 import { JwtService } from "./jwt.service";
 import { UserService } from "./user.service";
+import { redis } from "../config/redis";
 
 export class AuthService extends Service {
   constructor(
@@ -105,5 +108,35 @@ export class AuthService extends Service {
     });
 
     return true;
+  }
+
+  public async handleLogin(
+    user: UserWihtoutPassword,
+    userIp: string,
+    userAgent: string
+  ): Promise<
+    { accessToken?: string; refreshToken?: string, tempSessionUUID?: string }
+  > {
+    const { mailService } = await import("./"); // Lazy import to avoid circular dependency
+
+    if (!user.is_2fa_enabled) {
+      const refreshToken = await this.generateRefreshToken(
+        user,
+        userIp,
+        userAgent
+      );
+
+      const accessToken = await this.generateAccessToken(refreshToken);
+
+      return { accessToken, refreshToken };
+    }
+
+    mailService.send2FAAuthEmail(user.email, userIp, userAgent);
+
+    const tempSessionUUID = uuidv4();
+
+    redis.set("2fa:" + tempSessionUUID, user.email, "EX", 60 * 5);
+
+    return { tempSessionUUID };
   }
 }
