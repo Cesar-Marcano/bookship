@@ -1,9 +1,11 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
+import { LogoutDeviceDTO } from "../../../../dto/auth/logoutDevice.dto";
+import { HydratedRequest } from "../../../../middleware/bodyValidator";
 import { getUser } from "../../../../utils/getUser";
 import { authService } from "../../../../services";
 
-export const logoutHandler = async (
-  req: Request,
+export const logoutDeviceHandler = async (
+  req: HydratedRequest<LogoutDeviceDTO>,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -12,7 +14,7 @@ export const logoutHandler = async (
 
     const result = await authService.revokeRefreshToken(
       user.userData.id!,
-      user.tokenUuid
+      req.body.sessionUUID
     );
 
     if (result) {
