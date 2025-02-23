@@ -111,4 +111,7 @@ CREATE TABLE IF NOT EXISTS user_saved_books (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
     UNIQUE (user_id, book_id)
-)
+);
+
+-- Migration #3 02/23/2025 - Add forgotten rating column in book_ratings table
+ALTER TABLE book_ratings ADD COLUMN IF NOT EXISTS rating SMALLINT CHECK (rating >= 1 AND rating <= 5) DEFAULT 1;
