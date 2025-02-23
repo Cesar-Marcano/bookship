@@ -16,6 +16,7 @@ import { loginHandler } from "./handlers/login.handler";
 import { twoFactorAuthHandler } from "./handlers/twoFactorAuth.handler";
 import { accessTokenHandler } from "./handlers/accessToken.handler";
 import { registerHandler } from "./handlers/register.handler";
+import { LogoutHandler } from "./handlers/logout.handler";
 
 export const authController = Router();
 
@@ -35,29 +36,7 @@ authController.post(
 
 authController.post("/register", bodyValidator(CreateUserDto), registerHandler);
 
-authController.post("/logout", isAuthenticated, async (req, res, next) => {
-  try {
-    const user = getUser(req);
-
-    const result = await authService.revokeRefreshToken(
-      user.userData.id!,
-      user.tokenUuid
-    );
-
-    if (result) {
-      res.status(200).json({ message: "Successfully logged out" });
-      return;
-    }
-
-    res.status(400).json({ message: "User was not logged in" });
-
-    return;
-  } catch (error) {
-    next(error);
-
-    return;
-  }
-});
+authController.post("/logout", isAuthenticated, LogoutHandler);
 
 authController.get(
   "/active-sessions",
