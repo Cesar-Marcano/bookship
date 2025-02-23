@@ -1,4 +1,5 @@
 import "./config/db";
+import "./config/redis";
 
 import compression from "compression";
 import cors from "cors";

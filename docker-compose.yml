@@ -5,21 +5,43 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - PORT=3000
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
     restart: unless-stopped
 
   redis:
     image: redis:alpine
+    ports:
+      - "6379:6379"
     restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   db:
     image: postgres:alpine
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
+    env_file:
+      - .env
     restart: unless-stopped
+    volumes:
+      - postgre_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  redis_data:
+    driver: local
+  postgre_data:
+    driver: local

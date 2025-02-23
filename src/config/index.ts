@@ -62,3 +62,7 @@ export const nodemailerConfig = {
 };
 
 export const appName = getEnv<string>("APP_NAME", "BookShip");
+
+export const redisHost = getEnv<string>("REDIS_HOST", "localhost");
+
+export const redisPort = getEnv<number>("REDIS_PORT", 6379);
