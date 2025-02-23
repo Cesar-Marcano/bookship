@@ -16,12 +16,19 @@ import { jwtService } from "./";
 import { JwtService } from "./jwt.service";
 import { UserService } from "./user.service";
 import { redis } from "../config/redis";
+import { TwoFactorAuthDTO } from "../dto/auth/twoFactorAuth.dto";
+import { TwoFactorAuthService } from "./twoFactorAuth.service";
+import { UnauthorizedError } from "../errors/unauthorized.error";
+import { MailService } from "./mail.service";
 
 export class AuthService extends Service {
+
   constructor(
     private readonly userService: UserService,
     private readonly sessionRepository: SessionRepository,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly twoFactorAuthService: TwoFactorAuthService,
+    private readonly mailService: MailService
   ) {
     super();
   }
@@ -114,10 +121,11 @@ export class AuthService extends Service {
     user: UserWihtoutPassword,
     userIp: string,
     userAgent: string
-  ): Promise<
-    { accessToken?: string; refreshToken?: string, tempSessionUUID?: string }
-  > {
-    const { mailService } = await import("./"); // Lazy import to avoid circular dependency
+  ): Promise<{
+    accessToken?: string;
+    refreshToken?: string;
+    tempSessionUUID?: string;
+  }> {
 
     if (!user.is_2fa_enabled) {
       const refreshToken = await this.generateRefreshToken(
@@ -131,12 +139,47 @@ export class AuthService extends Service {
       return { accessToken, refreshToken };
     }
 
-    mailService.send2FAAuthEmail(user.email, userIp, userAgent);
+    this.mailService.send2FAAuthEmail(user.email, userIp, userAgent);
 
     const tempSessionUUID = uuidv4();
 
     redis.set("2fa:" + tempSessionUUID, user.email, "EX", 60 * 5);
 
     return { tempSessionUUID };
+  }
+
+  public async handle2FA(
+    { tempSessionUUID, code }: TwoFactorAuthDTO,
+    userIp: string,
+    userAgent: string
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const email = await redis.get("2fa:" + tempSessionUUID);
+
+    if (!email) {
+      throw new BadRequestError("Invalid tempSessionUUID");
+    }
+
+    const isOtpValid = await this.twoFactorAuthService.verifyOtp(email, code);
+
+    if (!isOtpValid) {
+      throw new UnauthorizedError("Invalid OTP");
+    }
+
+    const user = await this.userService.getUserByEmail(email);
+
+    if (!user) {
+      throw new BadRequestError("User not found");
+    }
+
+    const refreshToken = await this.generateRefreshToken(
+      user,
+      userIp,
+      userAgent
+    );
+    const accessToken = await this.generateAccessToken(refreshToken);
+
+    redis.del("2fa:" + tempSessionUUID);
+
+    return { accessToken, refreshToken };
   }
 }

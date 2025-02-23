@@ -7,14 +7,17 @@ import { UserService } from "./user.service";
 
 export const jwtService = JwtService.getInstance();
 export const userService = UserService.getInstance(userRepository);
-export const authService = AuthService.getInstance(
-  userService,
-  sessionRepository,
-  jwtService
-);
 export const twoFactorAuthService = TwoFactorAuthService.getInstance();
 export const mailService = MailService.getInstance(
   userService,
-  twoFactorAuthService,
-  authService
+  twoFactorAuthService
 );
+export const authService = AuthService.getInstance(
+  userService,
+  sessionRepository,
+  jwtService,
+  twoFactorAuthService,
+  mailService
+);
+
+mailService.setAuthService(authService);

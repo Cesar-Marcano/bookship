@@ -16,6 +16,14 @@ passport.use(
 
         if (!user) return done(null, false);
 
+        if (!user.email_verified)
+          return done(
+            new UnauthorizedError(
+              "Email not verified. Please verify your email before accessing this resource."
+            ),
+            false
+          );
+
         return done(null, user);
       } catch (err) {
         return done(err);
@@ -33,7 +41,12 @@ passport.use(
     async (payload: JwtPayload, done) => {
       try {
         if (payload.type !== TokenType.Access)
-          return done(new UnauthorizedError("Expected: Access Token, Received: Refresh Token."), false);
+          return done(
+            new UnauthorizedError(
+              "Expected: Access Token, Received: Refresh Token."
+            ),
+            false
+          );
 
         const userData = await userService.getUserByEmail(
           payload.userData.email

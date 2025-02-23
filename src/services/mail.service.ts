@@ -6,12 +6,17 @@ import { TwoFactorAuthService } from "./twoFactorAuth.service";
 import { UserService } from "./user.service";
 
 export class MailService extends Service {
+  private authService: AuthService | null = null;
+
   constructor(
     private readonly userService: UserService,
-    private readonly twoFactorAuthService: TwoFactorAuthService,
-    private readonly authService: AuthService
+    private readonly twoFactorAuthService: TwoFactorAuthService
   ) {
     super();
+  }
+
+  public setAuthService(authService: AuthService): void {
+    this.authService = authService;
   }
 
   public async send2FAAuthEmail(
@@ -40,7 +45,14 @@ export class MailService extends Service {
     return otpCode.code;
   }
 
-  public async sendEmailVerificationEmail(userEmail: string, userName: string): Promise<void> {
+  public async sendEmailVerificationEmail(
+    userEmail: string,
+    userName: string
+  ): Promise<void> {
+    if (!this.authService) {
+      throw new Error("AuthService has not been set");
+    }
+
     const emailVerificationToken =
       await this.authService.generateEmailVerificationToken(userEmail);
 
