@@ -6,6 +6,7 @@ const addActiveSessionSQL = executeSQLFile("auth/addActiveSession");
 const removeActiveSessionSQL = executeSQLFile("auth/removeActiveSession");
 const getSessionsSQL = executeSQLFile("auth/getSessions");
 const getActiveSessionSQL = executeSQLFile("auth/getActiveSession");
+const setLastActiveInSessionSQL = executeSQLFile("auth/setLastActiveInSession");
 
 export interface SessionType {
   id: number;
@@ -53,5 +54,9 @@ export class SessionRepository {
     const { rows } = await getActiveSessionSQL([userId, uuid]);
 
     return rows[0] ? rows[0] : null;
+  }
+
+  async setLastActiveInSession(uuid: string): Promise<void> {
+    await setLastActiveInSessionSQL([uuid]);
   }
 }

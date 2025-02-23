@@ -6,6 +6,7 @@ import { authService, userService } from "../services";
 import { jwtSecret } from "./";
 import { JwtPayload, TokenType } from "../types/jwtPayload";
 import { UnauthorizedError } from "../errors/unauthorized.error";
+import { sessionRepository } from "../repositories";
 
 passport.use(
   new LocalStrategy(
@@ -47,6 +48,8 @@ passport.use(
             ),
             false
           );
+
+        sessionRepository.setLastActiveInSession(payload.uuid);
 
         const userData = await userService.getUserByEmail(
           payload.userData.email

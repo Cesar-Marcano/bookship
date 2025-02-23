@@ -49,3 +49,5 @@ END $$;
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS two_factor_type two_factor_type DEFAULT 'email';
 
+-- Migration #0 02/23/2025 - Add last active column in sessions table
+ALTER TABLE sessions ADD COLUMN IF NOT EXISTS last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP;

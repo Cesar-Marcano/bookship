@@ -44,8 +44,8 @@ authController.get(
 
 authController.post(
   "/logout-device",
-  bodyValidator(LogoutDeviceDTO),
   isAuthenticated,
+  bodyValidator(LogoutDeviceDTO),
   logoutDeviceHandler
 );
 
