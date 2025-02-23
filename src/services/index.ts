@@ -1,5 +1,6 @@
-import { sessionRepository, userRepository } from "../repositories";
+import { bookRepository, sessionRepository, userRepository } from "../repositories";
 import { AuthService } from "./auth.service";
+import { BookService } from "./book.service";
 import { JwtService } from "./jwt.service";
 import { MailService } from "./mail.service";
 import { TwoFactorAuthService } from "./twoFactorAuth.service";
@@ -19,5 +20,7 @@ export const authService = AuthService.getInstance(
   twoFactorAuthService,
   mailService
 );
+
+export const bookService = BookService.getInstance(bookRepository);
 
 mailService.setAuthService(authService);

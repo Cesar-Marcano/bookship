@@ -163,3 +163,13 @@ DROP CONSTRAINT comment_votes_comment_id_fkey,
 ADD CONSTRAINT comment_votes_comment_id_fkey FOREIGN KEY (comment_id) REFERENCES book_comments(id) ON DELETE CASCADE;
 
 ALTER TABLE book_ratings ALTER COLUMN rating SET NOT NULL;
+
+-- Migration #7 02/24/2025 - added column added_by to books table and added foreign key
+
+ALTER TABLE books ADD COLUMN IF NOT EXISTS added_by INT;
+
+UPDATE books SET added_by = 1 WHERE added_by IS NULL;
+
+ALTER TABLE books ALTER COLUMN added_by SET NOT NULL;
+
+ALTER TABLE books ADD CONSTRAINT books_added_by_fkey FOREIGN KEY (added_by) REFERENCES users(id) ON DELETE CASCADE;

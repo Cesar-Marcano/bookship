@@ -9,15 +9,16 @@ const filterBooksSQL = executeSQLFile("books/filterBooks");
 const searchBooksSQL = executeSQLFile("books/searchBooks");
 
 export interface Book {
-  id: number;
+  id?: number;
   slug: string;
   title: string;
   author: string;
   description: string;
+  added_by: number;
   genre: string;
   publication_year: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
   cover_image_url?: string;
   file_url?: string;
 }
@@ -31,6 +32,7 @@ export class BookRepository {
       book.description,
       book.genre,
       book.publication_year,
+      book.added_by,
       book.cover_image_url ?? null,
       book.file_url ?? null,
     ]);
