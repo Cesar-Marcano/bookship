@@ -4,7 +4,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 
 import { authService, userService } from "../services";
 import { jwtSecret } from "./";
-import { JwtPayload, TokenType } from "../types/jwtPayload";
+import { JwtPayload, ReqUser, TokenType } from "../types/jwtPayload";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import { sessionRepository } from "../repositories";
 
@@ -59,8 +59,9 @@ passport.use(
 
         if (userData.password) userData.password = "";
 
-        const user = {
+        const user: ReqUser = {
           userData,
+          disabled: payload.disabled,
           tokenUuid: payload.uuid,
         };
 

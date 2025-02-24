@@ -9,6 +9,7 @@ export enum TokenType {
 export interface JwtPayload {
   uuid: string;
   type: TokenType;
+  disabled: boolean;
   userData: {
     email: string;
     id: number;
@@ -21,5 +22,6 @@ export type RawJwtPayload = Omit<JwtPayload, "type">;
 
 export interface ReqUser {
   userData: UserWihtoutPassword;
+  disabled: boolean,
   tokenUuid: string;
 }
