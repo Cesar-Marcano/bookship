@@ -25,7 +25,16 @@ export class BookService extends Service {
   }
 
   public async getBook(bookId: number): Promise<Book> {
+    const redisCacheKey = `find:books:${bookId}`;
+    const cachedBook = await redis.get(redisCacheKey);
+
+    if (cachedBook) {
+      return JSON.parse(cachedBook);
+    }
+
     const book = await this.bookRepository.getBook(bookId);
+
+    await redis.set(redisCacheKey, JSON.stringify(book), "EX", 3600 * 3);
 
     return book;
   }
