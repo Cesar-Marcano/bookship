@@ -233,18 +233,19 @@ CREATE INDEX IF NOT EXISTS idx_reports_created_at ON reports (created_at DESC);
 
 -- Migration #2 02/25/2025 - Added reviewed_by column and done column to reports table
 ALTER TABLE reports 
-ADD COLUMN reviewed_by INTEGER;
+ADD COLUMN IF NOT EXISTS reviewed_by INTEGER;
 
 ALTER TABLE reports 
+DROP CONSTRAINT fk_reviewed_by, 
 ADD CONSTRAINT fk_reviewed_by 
 FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL;
 
 ALTER TABLE reports
-ADD COLUMN done BOOLEAN DEFAULT FALSE;
+ADD COLUMN IF NOT EXISTS done BOOLEAN DEFAULT FALSE;
 
 CREATE INDEX IF NOT EXISTS idx_reports_reviewed_by ON reports(reviewed_by);
 
 CREATE INDEX IF NOT EXISTS idx_reports_done ON reports(done);
 
 ALTER TABLE reports
-ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
