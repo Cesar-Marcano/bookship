@@ -1,0 +1,1 @@
+INSERT INTO book_comments (book_id, user_id, comment) VALUES ($1, $2, $3) RETURNING id;
