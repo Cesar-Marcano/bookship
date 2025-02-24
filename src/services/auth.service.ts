@@ -22,7 +22,6 @@ import { UnauthorizedError } from "../errors/unauthorized.error";
 import { MailService } from "./mail.service";
 
 export class AuthService extends Service {
-
   constructor(
     private readonly userService: UserService,
     private readonly sessionRepository: SessionRepository,
@@ -49,7 +48,8 @@ export class AuthService extends Service {
   public async generateRefreshToken(
     user: UserWihtoutPassword,
     userIp: string,
-    userAgent: string
+    userAgent: string,
+    clientUUID: string
   ): Promise<string> {
     let sessionUuid: string | null = null;
 
@@ -58,11 +58,13 @@ export class AuthService extends Service {
         user.id!,
         userIp,
         userAgent,
-        calculateExpiresAt(refreshTokenExpiry)
+        calculateExpiresAt(refreshTokenExpiry),
+        clientUUID,
       );
 
       const payload: RawJwtPayload = {
         uuid: sessionUuid,
+        disabled: false,
         userData: {
           id: user.id as number,
           email: user.email,
@@ -82,6 +84,10 @@ export class AuthService extends Service {
 
   public async generateAccessToken(token: string): Promise<string> {
     const payload = await this.jwtService.verifyRefreshToken(token);
+
+    const session = await this.sessionRepository.getActiveSession(payload.userData.id, payload.uuid);
+
+    payload.disabled = session!.disabled_session;
 
     return await jwtService.generateAccessToken(payload);
   }
@@ -120,18 +126,19 @@ export class AuthService extends Service {
   public async handleLogin(
     user: UserWihtoutPassword,
     userIp: string,
-    userAgent: string
+    userAgent: string,
+    clientUUID: string
   ): Promise<{
     accessToken?: string;
     refreshToken?: string;
     tempSessionUUID?: string;
   }> {
-
     if (!user.is_2fa_enabled) {
       const refreshToken = await this.generateRefreshToken(
         user,
         userIp,
-        userAgent
+        userAgent,
+        clientUUID
       );
 
       const accessToken = await this.generateAccessToken(refreshToken);
@@ -151,7 +158,8 @@ export class AuthService extends Service {
   public async handle2FA(
     { tempSessionUUID, code }: TwoFactorAuthDTO,
     userIp: string,
-    userAgent: string
+    userAgent: string,
+    clientUUID: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const email = await redis.get("2fa:" + tempSessionUUID);
 
@@ -174,7 +182,8 @@ export class AuthService extends Service {
     const refreshToken = await this.generateRefreshToken(
       user,
       userIp,
-      userAgent
+      userAgent,
+      clientUUID
     );
     const accessToken = await this.generateAccessToken(refreshToken);
 
