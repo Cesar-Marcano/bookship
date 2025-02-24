@@ -20,7 +20,7 @@ bookController.post(
   createBookHandler
 );
 
-bookController.get("/:id", getBookHandler);
+bookController.get("/get-book/:id", getBookHandler);
 
 bookController.put(
   "/:id",

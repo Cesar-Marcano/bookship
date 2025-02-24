@@ -8,14 +8,14 @@ export const searchBooksHandler = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { genre, author, limit, offset, titleSearchTerm } = req.query;
+    const { genre, author, limit, offset, title } = req.query;
 
-    if (!titleSearchTerm) {
+    if (!title) {
       throw new BadRequestError("Title search term is required");
     }
 
     const filters = {
-      titleSearchTerm: titleSearchTerm as string,
+      titleSearchTerm: title as string,
       ...(genre ? { genre: genre as string } : {}),
       ...(author ? { author: author as string } : {}),
       limit: Math.max(1, Number(limit)),

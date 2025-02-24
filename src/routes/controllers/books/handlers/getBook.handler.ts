@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { bookService } from "../../../../services";
+import { BadRequestError } from "../../../../errors/badRequest.error";
 
 export const getBookHandler = async (
   req: Request,
@@ -7,9 +8,13 @@ export const getBookHandler = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const book = await bookService.getBook(
-      parseInt(req.params["id"] as string)
-    );
+    const id = parseInt(req.params["id"] as string);
+
+    if (!id) {
+      throw new BadRequestError("Invalid book id");
+    }
+
+    const book = await bookService.getBook(id);
 
     res.status(200).json(book);
 

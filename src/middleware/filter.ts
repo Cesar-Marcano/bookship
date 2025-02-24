@@ -4,6 +4,7 @@ import { BadRequestError } from "../errors/badRequest.error";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 import logger from "../config/logger";
 import { InternalServerError } from "../errors/internalServer.error";
+import { DuplicateKeyError } from "../errors/duplicateKey.error";
 
 export const errorFilter = (
   error: unknown,
@@ -32,6 +33,12 @@ export const errorFilter = (
     return;
   } else if (error instanceof InternalServerError) {
     res.status(500).json({
+      message: error.message,
+    });
+
+    return;
+  } else if (error instanceof DuplicateKeyError) {
+    res.status(409).json({
       message: error.message,
     });
 

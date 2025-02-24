@@ -2,12 +2,10 @@ import {
   IsOptional,
   IsString,
   IsUrl,
-  IsEnum,
   IsNotEmpty,
   IsNumber,
 } from "class-validator";
 import { IsSlug } from "../../utils/slugDecorator";
-import { Genre } from "./createBook.dto";
 
 export class UpdateBookDto {
   @IsNumber()
@@ -35,8 +33,9 @@ export class UpdateBookDto {
   description?: string;
 
   @IsOptional()
-  @IsEnum(Genre)
-  genre?: Genre;
+  @IsString()
+  @IsNotEmpty()
+  genre?: string;
 
   @IsOptional()
   @IsString()

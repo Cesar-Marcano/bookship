@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 -- Migration #0 02/21/2025 - Create users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -172,4 +174,15 @@ UPDATE books SET added_by = 1 WHERE added_by IS NULL;
 
 ALTER TABLE books ALTER COLUMN added_by SET NOT NULL;
 
-ALTER TABLE books ADD CONSTRAINT books_added_by_fkey FOREIGN KEY (added_by) REFERENCES users(id) ON DELETE CASCADE;
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints 
+        WHERE table_name = 'books' 
+        AND constraint_name = 'books_added_by_fkey'
+    ) THEN
+        ALTER TABLE books ADD CONSTRAINT books_added_by_fkey FOREIGN KEY (added_by) REFERENCES users(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
+SET pg_trgm.similarity_threshold = 0.2;
