@@ -11,10 +11,13 @@ export const twoFactorAuthHandler = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const clientUUID = req.cookies["clientUUID"];
+    
     const tokens = await authService.handle2FA(
       req.body,
       getUserIp(req),
-      getUserAgent(req)
+      getUserAgent(req),
+      clientUUID
     );
 
     res.status(200).json(tokens);
