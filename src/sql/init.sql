@@ -1,5 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
+SET pg_trgm.similarity_threshold = 0.2;
+
 -- Migration #0 02/21/2025 - Create users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -115,7 +117,7 @@ CREATE TABLE IF NOT EXISTS user_saved_books (
     UNIQUE (user_id, book_id)
 );
 
--- Migration #3 02/23/2025 - Add forgotten rating column in book_ratings table
+-- Migration #3 02/23/2025 - Add rating column in book_ratings table
 ALTER TABLE book_ratings ADD COLUMN IF NOT EXISTS rating SMALLINT CHECK (rating >= 1 AND rating <= 5) DEFAULT 1;
 
 -- Migration #4 02/23/2025 - Update books table to set NULL constraints
@@ -133,7 +135,7 @@ ALTER TABLE books
 ALTER TABLE books ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 -- Migration #5 02/23/2025 - Added slug column in books table
-ALTER TABLE books ADD COLUMN IF NOT EXISTS slug VARCHAR(255); -- ADD FORGOTTEN IF NOT EXISTS
+ALTER TABLE books ADD COLUMN IF NOT EXISTS slug VARCHAR(255);
 
 UPDATE books SET slug = LOWER(REPLACE(title, ' ', '-')) || '-' || id WHERE slug IS NULL;
 
@@ -185,4 +187,64 @@ BEGIN
     END IF;
 END $$;
 
-SET pg_trgm.similarity_threshold = 0.2;
+-- Migration #0 02/25/2025 - Created report table
+
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type  WHERE typname = 'report_type') THEN
+        CREATE TYPE report_type AS ENUM ('book_comment', 'book');
+    END IF;
+END $$;
+
+CREATE TABLE IF NOT EXISTS reports (
+    id SERIAL PRIMARY KEY,
+    report_type report_type NOT NULL,
+    report_details VARCHAR(255) NOT NULL,
+    user_id INTEGER NOT NULL,
+    book_comment_id INTEGER,
+    book_id INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    CHECK (
+        (book_comment_id IS NOT NULL AND book_id IS NULL) OR
+        (book_comment_id IS NULL AND book_id IS NOT NULL)
+    ),
+    FOREIGN KEY (book_comment_id) REFERENCES book_comments(id) ON DELETE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Migration #1 02/25/2025 - Created indexes
+CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_book_comments_book_id ON book_comments(book_id);
+CREATE INDEX IF NOT EXISTS idx_book_comments_user_id ON book_comments(user_id);
+CREATE INDEX IF NOT EXISTS idx_comment_votes_comment_id ON comment_votes(comment_id);
+CREATE INDEX IF NOT EXISTS idx_comment_votes_user_id ON comment_votes(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_saved_books_composite ON user_saved_books(user_id, book_id);
+CREATE INDEX IF NOT EXISTS idx_reports_user_id ON reports(user_id);
+CREATE INDEX IF NOT EXISTS idx_reports_book_comment_id ON reports(book_comment_id);
+CREATE INDEX IF NOT EXISTS idx_reports_book_id ON reports(book_id);
+
+CREATE INDEX IF NOT EXISTS idx_reports_details_trgm ON reports USING gin(report_details gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_books_title_tgrm ON books USING gin(title gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_books_author_tgrm ON books USING gin(author gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_books_genre_tgrm ON books USING gin(genre gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_book_comments_tgrm ON book_comments USING gin(comment gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_reports_created_at ON reports (created_at DESC);
+
+-- Migration #2 02/25/2025 - Added reviewed_by column and done column to reports table
+ALTER TABLE reports 
+ADD COLUMN reviewed_by INTEGER;
+
+ALTER TABLE reports 
+ADD CONSTRAINT fk_reviewed_by 
+FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL;
+
+ALTER TABLE reports
+ADD COLUMN done BOOLEAN DEFAULT FALSE;
+
+CREATE INDEX IF NOT EXISTS idx_reports_reviewed_by ON reports(reviewed_by);
+
+CREATE INDEX IF NOT EXISTS idx_reports_done ON reports(done);
+
+ALTER TABLE reports
+ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
