@@ -1,3 +1,5 @@
+import logger from "../config/logger";
+import { redis } from "../config/redis";
 import { CreateBookDto } from "../dto/books/createBook.dto";
 import { UpdateBookDto } from "../dto/books/updateBook.dto";
 import { UnauthorizedError } from "../errors/unauthorized.error";
@@ -71,7 +73,18 @@ export class BookService extends Service {
     limit: number;
     offset: number;
   }): Promise<Book[]> {
+    const redisCacheKey = `search:books:${JSON.stringify(params)}`;
+    const cachedResults = await redis.get(redisCacheKey).catch((err) => {
+      logger.error("Error while getting cache", err);
+    });
+
+    if (cachedResults) {
+      return JSON.parse(cachedResults);
+    }
+
     const books = await this.bookRepository.filterBooks(params);
+
+    await redis.set(redisCacheKey, JSON.stringify(books), "EX", 3600 * 2);
 
     return books;
   }
@@ -83,7 +96,18 @@ export class BookService extends Service {
     limit: number;
     offset: number;
   }): Promise<Book[]> {
+    const redisCacheKey = `search:books:${JSON.stringify(params)}`;
+    const cachedResults = await redis.get(redisCacheKey).catch((err) => {
+      logger.error("Error while getting cache", err);
+    });
+
+    if (cachedResults) {
+      return JSON.parse(cachedResults);
+    }
+
     const books = await this.bookRepository.searchBooks(params);
+
+    await redis.set(redisCacheKey, JSON.stringify(books), "EX", 3600 * 2);
 
     return books;
   }
