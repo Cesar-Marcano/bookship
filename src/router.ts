@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { controllers } from "./routes";
-import { isAuthenticated } from "./middleware/authMiddleware";
+import { isAuthenticated, isAuthorized } from "./middleware/authMiddleware";
 
 export interface Controller {
   slug: string;
@@ -16,7 +16,7 @@ controllers.forEach((controller) => {
   const sanitizedSlug = controller.slug.replace(/^\/|\/$/g, "");
 
   if (controller.requiresAuthorization) {
-    router.use(`/${sanitizedSlug}`, isAuthenticated, controller.controller);
+    router.use(`/${sanitizedSlug}`, isAuthenticated, isAuthorized, controller.controller);
   } else {
     router.use(`/${sanitizedSlug}`, controller.controller);
   }
