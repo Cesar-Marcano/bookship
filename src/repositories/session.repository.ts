@@ -7,6 +7,7 @@ const removeActiveSessionSQL = executeSQLFile("auth/removeActiveSession");
 const getSessionsSQL = executeSQLFile("auth/getSessions");
 const getActiveSessionSQL = executeSQLFile("auth/getActiveSession");
 const setLastActiveInSessionSQL = executeSQLFile("auth/setLastActiveInSession");
+const isCommonClientSQL = executeSQLFile("auth/isCommonClient");
 
 export interface SessionType {
   id: number;
@@ -14,8 +15,11 @@ export interface SessionType {
   user_ip: string;
   user_agent: string;
   last_active: string;
+  clientUUID: string;
   expires_at: string;
   created_at: string;
+  possibly_insecure: boolean;
+  disabled_session: boolean;
 }
 
 export class SessionRepository {
@@ -23,11 +27,19 @@ export class SessionRepository {
     userId: number,
     userIp: string,
     userAgent: string,
-    expiresAt: string
+    expiresAt: string,
+    clientUUID: string
   ): Promise<string> {
     const uuid = uuidv4();
 
-    await addActiveSessionSQL([userId, uuid, userIp, userAgent, expiresAt]);
+    await addActiveSessionSQL([
+      userId,
+      uuid,
+      userIp,
+      userAgent,
+      expiresAt,
+      clientUUID,
+    ]);
 
     return uuid;
   }
@@ -59,5 +71,21 @@ export class SessionRepository {
 
   async setLastActiveInSession(uuid: string): Promise<void> {
     await setLastActiveInSessionSQL([uuid]);
+  }
+
+  async isCommonClient(
+    clientUUID: string,
+    userAgent: string,
+    tokenUUID: string,
+    userId: number
+  ): Promise<{ session_insecure: boolean; session_disabled: boolean }> {
+    const { rows } = await isCommonClientSQL([
+      clientUUID,
+      userAgent,
+      tokenUUID,
+      userId,
+    ]);
+
+    return rows[0] || { session_insecure: false, session_disabled: false };
   }
 }

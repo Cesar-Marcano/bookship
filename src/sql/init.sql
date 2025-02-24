@@ -236,7 +236,7 @@ ALTER TABLE reports
 ADD COLUMN IF NOT EXISTS reviewed_by INTEGER;
 
 ALTER TABLE reports 
-DROP CONSTRAINT fk_reviewed_by, 
+DROP CONSTRAINT IF EXISTS fk_reviewed_by, 
 ADD CONSTRAINT fk_reviewed_by 
 FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL;
 
@@ -249,3 +249,13 @@ CREATE INDEX IF NOT EXISTS idx_reports_done ON reports(done);
 
 ALTER TABLE reports
 ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+-- Migration #3 02/25/2025 - Added client uuid column to sessions table
+ALTER TABLE sessions 
+ADD COLUMN IF NOT EXISTS client_uuid VARCHAR(36) DEFAULT 'Unknown';
+
+ALTER TABLE sessions
+ADD COLUMN IF NOT EXISTS possibly_insecure BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE sessions 
+ADD COLUMN IF NOT EXISTS disabled_session BOOLEAN DEFAULT FALSE;
