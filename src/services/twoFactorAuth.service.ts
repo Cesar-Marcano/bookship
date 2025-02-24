@@ -18,6 +18,7 @@ export class TwoFactorAuthService extends Service {
         digits: true,
         lowerCaseAlphabets: false,
         upperCaseAlphabets: true,
+        specialChars: false,
       });
 
       const expirationInMinutes = 5;
