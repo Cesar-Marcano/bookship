@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{app_name}} Insecure Session Notification</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f9fafb;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #1f2937;
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      p {
+        color: #4b5563;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+      .info-box {
+        background-color: #f3f4f6;
+        padding: 10px;
+        border-radius: 10px;
+        margin-top: 15px;
+        font-size: 14px;
+      }
+      .footer {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #6b7280;
+      }
+      .links {
+        margin-top: 20px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Insecure Session Detected</h1>
+      <p>Hello, {{user_name}}!</p>
+      <p>
+        We have detected that your session on {{app_name}} has been marked as insecure. This may have occurred due to a major browser update or a change in your operating system. Please note that you can still use your session, but we recommend reviewing it.
+      </p>
+      <div class="info-box">
+        <p><strong>Session Details:</strong></p>
+        <p><strong>IP Address:</strong> {{user_ip}}</p>
+        <p><strong>Device:</strong> {{user_agent}}</p>
+      </div>
+
+      <p class="footer">
+        If you believe this notification was sent in error, you can ignore it. 
+        For your security, please review all your active sessions.
+      </p>
+      <div class="links">
+        <p><a href="{{rehabilitate_session_url}}">Rehabilitate this Session</a></p>
+        <p><a href="{{list_sessions_url}}">View All Active Sessions</a></p>
+      </div>
+    </div>
+  </body>
+</html>

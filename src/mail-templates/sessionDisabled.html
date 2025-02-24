@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{app_name}} Session Disabled Notification</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f9fafb;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #1f2937;
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      p {
+        color: #4b5563;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+      .info-box {
+        background-color: #f3f4f6;
+        padding: 10px;
+        border-radius: 10px;
+        margin-top: 15px;
+        font-size: 14px;
+      }
+      .footer {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #6b7280;
+      }
+      .links {
+        margin-top: 20px;
+        font-size: 14px;
+      }
+      .alert {
+        background-color: #ffe5e5;
+        color: #b71c1c;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Session Disabled</h1>
+      <p>Hello, {{user_name}}!</p>
+      <p>
+        We regret to inform you that your session on {{app_name}} has been
+        disabled due to security concerns. This is a critical security alert
+        that requires your immediate attention.
+      </p>
+
+      <div class="alert">
+        <strong>What Happened?</strong><br />
+        The device identifier did not match the one stored in our system. This
+        could indicate that there was a problem with your browser, or someone
+        may be trying to access your account using your session.
+      </div>
+
+      <p>
+        You can still use your account normally from another device if you have
+        another session open. We recommend that you verify all your active
+        logins to ensure no one else is attempting to access your account.
+      </p>
+
+      <div class="info-box">
+        <p><strong>Session Details:</strong></p>
+        <p><strong>IP Address:</strong> {{user_ip}}</p>
+        <p><strong>Device:</strong> {{user_agent}}</p>
+      </div>
+
+      <p class="footer">
+        To secure your account, please take the necessary actions below:
+      </p>
+      <div class="links">
+        <p>
+          <a href="{{rehabilitate_session_url}}">Rehabilitate this Session</a>
+        </p>
+        <p><a href="{{revoke_session_url}}">Revoke this Session</a></p>
+        <p><a href="{{list_sessions_url}}">View All Active Sessions</a></p>
+      </div>
+    </div>
+  </body>
+</html>
