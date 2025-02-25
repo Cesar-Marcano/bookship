@@ -11,20 +11,46 @@ import dayjs from "dayjs";
 import { isProduction } from "../../../../config";
 
 /**
- * Handles user login requests using passport local strategy.
- *
- * @param req - The request object containing user credentials.
- * @param res - The response object used to send back HTTP responses.
- * @param next - The next middleware function in the stack.
- *
- * The function authenticates the user using passport's local strategy.
- * If authentication is successful, it retrieves the user's IP and user agent,
- * then calls `authService.handleLogin` to handle further login processes.
- * If the user has two-factor authentication enabled, it sends a 2FA email.
- * Otherwise, it returns access and refresh tokens.
- *
- * If authentication fails, it responds with a 400 status and an error message.
- * Errors during the login process are passed to the next middleware.
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: User login
+ *     description: Authenticates a user and returns login information. It may return either access and refresh tokens or a temporary session UUID for two-step authentication.
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginUserDto'
+ *     responses:
+ *       200:
+ *         description: Successfully logged in
+ *         content:
+ *           application/json:
+ *             oneOf:
+ *               - type: object
+ *                 properties:
+ *                   accessToken:
+ *                     type: string
+ *                     example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                   refreshToken:
+ *                     type: string
+ *                     example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *               - type: object
+ *                 properties:
+ *                   tempSessionUUID:
+ *                     type: string
+ *                     format: uuid
+ *                     description: A temporary session UUID for two-step authentication, valid for 5 minutes.
+ *                     example: "550e8400-e29b-41d4-a716-446655440000"
+ *       400:
+ *         description: Bad request, invalid credentials
+ *       401:
+ *         description: Unauthorized, user not found
+ *       500:
+ *         description: Internal server error
  */
 export const loginHandler = (
   req: HydratedRequest<LoginUserDto>,
