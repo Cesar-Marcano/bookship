@@ -15,6 +15,7 @@ import { isProduction, usesLoadBalancer } from "./config";
 import "./config/passport";
 import passport from "passport";
 import cookieParser from "cookie-parser";
+import { setupSwagger } from "./config/swagger";
 
 // Express App Instance
 export const app = express();
@@ -63,3 +64,8 @@ app.use("/api", router);
 //      Error Filter
 // =====================
 app.use(errorFilter);
+
+// =====================
+//      Swagger UI
+// =====================
+setupSwagger(app);
